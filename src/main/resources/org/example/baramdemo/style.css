@@ -1,0 +1,5 @@
+* {
+  -fx-font-family: "Malgun Gothic", sans-serif;  /* 폰트 설정 */
+  -fx-font-size: 14px;       /* 폰트 크기 설정 */
+  -fx-font-weight: bold;   /* 폰트 굵기 설정 (기본값은 normal) */
+}

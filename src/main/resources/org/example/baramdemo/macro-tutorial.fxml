@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml" fx:controller="org.example.baramdemo.controller.TutorialController" prefWidth="500.0" prefHeight="400.0">
+  <padding>
+    <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+  </padding>
+
+  <!-- 매크로 사용법 문구 -->
+  <Label text="매크로 사용법" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+  <Label text="1. F1 키를 눌러 퀘스트 수락을 시작합니다."/>
+
+  <Label text="2. 퀘스트가 수락되면 알림 소리가 재생되고 캐릭터는 사냥터앞으로 출두합니다."/>
+
+  <Label text="3. 프로그램을 종료하려면 '종료' 버튼을 클릭하세요."/>
+
+</VBox>
