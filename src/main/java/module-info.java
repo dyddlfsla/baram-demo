@@ -3,6 +3,7 @@ module org.example.baramdemo {
 
   requires org.controlsfx.controls;
   requires org.kordamp.bootstrapfx.core;
+  requires java.desktop;
 
   opens org.example.baramdemo to javafx.fxml;
   exports org.example.baramdemo;
