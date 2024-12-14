@@ -11,7 +11,8 @@
 <?import javafx.scene.text.Text?>
 
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0"
+  fx:controller="org.example.baramdemo.controller.LoginController" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Log in">
          <font>
@@ -28,7 +29,7 @@
                   <Insets right="20.0" />
                </HBox.margin>
             </Label>
-            <TextField promptText="아이디를 입력하세요" />
+            <TextField fx:id="inputId" promptText="아이디를 입력하세요" />
          </children>
          <VBox.margin>
             <Insets top="20.0" />
@@ -41,15 +42,15 @@
                   <Insets right="15.0" />
                </HBox.margin>
             </Label>
-            <PasswordField promptText="패스워드를 입력하세요" />
+            <PasswordField fx:id="inputPw" promptText="패스워드를 입력하세요" onAction="#handleLoginBtn"/>
          </children>
       </HBox>
-      <Text strokeType="OUTSIDE" strokeWidth="0.0" text="errorMessage">
+      <Text strokeType="OUTSIDE" fx:id="errorMsg" strokeWidth="0.0" text="errorMessage">
          <VBox.margin>
             <Insets top="40.0" />
          </VBox.margin>
       </Text>
-      <Button mnemonicParsing="false" prefWidth="300.0" text="Log in">
+      <Button mnemonicParsing="false" prefWidth="300.0" text="Log in" onAction="#handleLoginBtn">
          <VBox.margin>
             <Insets top="20.0" />
          </VBox.margin>
