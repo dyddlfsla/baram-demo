@@ -22,6 +22,9 @@ public class IntroController {
       Scene tutorialScene = new Scene(tutorialView);
       tutorialScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/org/example/baramdemo/style.css")).toExternalForm());
 
+      LoginController controller = fxmlLoader.getController();
+      controller.setStage(stage); // 여기서 primaryStage 를 전달
+
       // 현재 Stage 에 새로운 Scene 을 설정
       stage.setScene(tutorialScene);
     } catch (IOException e) {
