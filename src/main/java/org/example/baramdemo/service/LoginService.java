@@ -9,7 +9,7 @@ public class LoginService {
   private String inputId;
   private String inputPw;
   private boolean loginResult;
-  private Admin admin = Admin.getAdmin();
+  private final Admin admin = Admin.getInstance();
 
   public boolean isLoginSuccess(TextField inputId, PasswordField inputPw) {
     initialize(inputId, inputPw);

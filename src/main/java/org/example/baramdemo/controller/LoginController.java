@@ -10,15 +10,11 @@ public class LoginController {
 
   @FXML
   private TextField inputId; // id
-
   @FXML
   private PasswordField inputPw; // pw
-
   @FXML
   private Text errorMsg; // 로그인 에러 메시지
-
   private static final LoginService loginService = new LoginService();
-
   private boolean loginResult;
 
   @FXML

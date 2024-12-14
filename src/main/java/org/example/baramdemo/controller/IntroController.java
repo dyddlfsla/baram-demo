@@ -10,12 +10,7 @@ import javafx.stage.Stage;
 
 public class IntroController {
 
-  private Stage stage; // Stage를 저장할 변수
-
-  // Stage 를 외부에서 전달받는 메소드
-  public void setStage(Stage stage) {
-    this.stage = stage;
-  }
+  private Stage stage; // Stage 를 저장할 변수
 
   // "시작하기" 버튼 클릭 시 호출될 메소드
   @FXML
@@ -33,4 +28,10 @@ public class IntroController {
       e.printStackTrace();
     }
   }
+
+  // Stage 를 외부에서 전달받는 메소드
+  public void setStage(Stage stage) {
+    this.stage = stage;
+  }
+
 }

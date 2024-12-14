@@ -7,7 +7,6 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.example.baramdemo.controller.IntroController;
 
-
 public class Main extends Application {
 
   @Override

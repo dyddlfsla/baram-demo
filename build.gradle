@@ -22,7 +22,7 @@ compileJava {
     targetCompatibility = JavaVersion.VERSION_23  // JDK 23로 설정
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
