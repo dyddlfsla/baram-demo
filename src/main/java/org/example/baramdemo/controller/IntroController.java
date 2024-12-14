@@ -22,7 +22,7 @@ public class IntroController {
   private void handleStartBtn() {
     try {
       // 두 번째 화면 로드
-      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/baramdemo/macro-tutorial.fxml"));
+      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/baramdemo/log-in-view.fxml"));
       VBox tutorialView = fxmlLoader.load();
       Scene tutorialScene = new Scene(tutorialView);
       tutorialScene.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/org/example/baramdemo/style.css")).toExternalForm());
