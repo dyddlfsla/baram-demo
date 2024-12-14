@@ -8,12 +8,11 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.baramdemo.controller.IntroController">
    <children>
       <ImageView fitHeight="313.0" fitWidth="500.0" nodeOrientation="INHERIT" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@/static/img/baram_main.png" />
+            <Image url="@../../../static/img/baram_main.png" />
          </image>
       </ImageView>
       <Text strokeType="OUTSIDE" strokeWidth="0.0" text="안녕하세요. 왕퀘의 나라에 오신 것을 환영합니다." textAlignment="CENTER" wrappingWidth="367.13671875">
@@ -24,7 +23,7 @@
             <Font name="Malgun Gothic Bold" size="15.0" />
          </font>
       </Text>
-      <Button mnemonicParsing="false" prefWidth="400.0" text="시작하기" onAction="#handleStartBtn">
+      <Button mnemonicParsing="false" onAction="#handleStartBtn" prefWidth="300.0" text="시작하기">
          <VBox.margin>
             <Insets top="20.0" />
          </VBox.margin>
