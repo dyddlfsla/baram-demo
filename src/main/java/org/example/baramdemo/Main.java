@@ -14,7 +14,7 @@ public class Main extends Application {
   public void start(Stage primaryStage) throws IOException {
 
     // FXML 파일을 로드하고 Scene 을 설정
-    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("introduce-view.fxml"));
+    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("intro-view.fxml"));
     Scene scene = new Scene(fxmlLoader.load());
 
     // HelloController 에 stage 전달
