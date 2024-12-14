@@ -11,7 +11,7 @@ public class LoginService {
   private boolean loginResult;
   private final Admin admin = Admin.getInstance();
 
-  public boolean isLoginSuccess(TextField inputId, PasswordField inputPw) {
+  public boolean execute(TextField inputId, PasswordField inputPw) {
     initialize(inputId, inputPw);
     checkIdAndPw();
     return loginResult;
