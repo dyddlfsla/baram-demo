@@ -11,6 +11,7 @@ version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    jcenter()
 }
 
 ext {
@@ -37,6 +38,7 @@ javafx {
 }
 
 dependencies {
+    implementation files('lib/jnativehook-2.2.2.jar')
     implementation 'org.openjfx:javafx-controls:23'
     implementation 'org.openjfx:javafx-web:23'
     implementation 'org.openjfx:javafx-fxml:23'
