@@ -42,7 +42,7 @@ public class Main extends Application {
   private void initializePrimaryStage(Stage primaryStage) {
     stage = primaryStage;
     stage.setTitle("The Kingdom of Winds Classic");
-    Image iconImg = new Image(getClass().getResourceAsStream("../../../static/img/baram_windows_icon.png"));
+    Image iconImg = new Image(getClass().getResourceAsStream("/static/img/baram_windows_icon.png"));
     stage.getIcons().add(iconImg);
     stage.setResizable(false);
   }

@@ -6,6 +6,7 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -13,11 +14,17 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelReader;
 import javafx.scene.robot.Robot;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import org.opencv.core.Core;
 
 public class MacroController {
+
+  static {
+    System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // OpenCV 라이브러리 로드
+  }
 
   FileChooser fileChooser;
   @FXML
@@ -88,6 +95,7 @@ public class MacroController {
       moveMouse();
       showInfoAlert("F1 키가 눌렸습니다. 마우스를 이동합니다.");
       playSystemBeep();
+      convertImageToBufferedImage(imageOfMonster01.getImage());
     });
   }
 
@@ -181,4 +189,36 @@ public class MacroController {
   public void selectImageOfMonster05() {
     selectImage(imageOfMonster05);
   }
+
+  // Image를 BufferedImage로 변환하는 메서드
+
+  public BufferedImage convertImageToBufferedImage(Image image) {
+    int width = (int) image.getWidth();
+    int height = (int) image.getHeight();
+    BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+
+    PixelReader pixelReader = image.getPixelReader();
+    for (int y = 0; y < height; y++) {
+      for (int x = 0; x < width; x++) {
+        // Get the color of each pixel
+        javafx.scene.paint.Color fxColor = pixelReader.getColor(x, y);
+
+        // Convert JavaFX color to AWT color
+        int red = (int) (fxColor.getRed() * 255);   // Red channel
+        int green = (int) (fxColor.getGreen() * 255); // Green channel
+        int blue = (int) (fxColor.getBlue() * 255);  // Blue channel
+        int alpha = (int) (fxColor.getOpacity() * 255); // Alpha channel
+
+        // Create a 32-bit ARGB color (alpha << 24 | red << 16 | green << 8 | blue)
+        int awtColor = (alpha << 24) | (red << 16) | (green << 8) | blue;
+
+        bufferedImage.setRGB(x, y, awtColor);
+      }
+    }
+
+    System.out.println(bufferedImage);
+
+    return bufferedImage;
+  }
+
 }
