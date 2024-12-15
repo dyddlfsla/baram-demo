@@ -9,10 +9,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import org.example.baramdemo.service.LoginService;
 import org.example.baramdemo.util.LoginAlertHelper;
+import org.example.baramdemo.util.StageManager;
 
 public class LoginController {
 
@@ -20,9 +19,11 @@ public class LoginController {
   private TextField inputId; // id
   @FXML
   private PasswordField inputPw; // pw
-  private Stage stage;
+  private static final String MACRO_FXML_PATH = "/org/example/baramdemo/macro-view.fxml";
+  private static final String JOIN_WEB_PAGE_URL = "https://www.naver.com";
+  private static final String RESTORE_WEB_PAGE_URL = "https://www.google.com";
 
-  private final Desktop desktop = Desktop.getDesktop();
+  private Desktop desktop = Desktop.getDesktop();
   private static final LoginService loginService = new LoginService();
   private boolean isLoginSuccess;
 
@@ -31,44 +32,41 @@ public class LoginController {
     isLoginSuccess = loginService.execute(inputId, inputPw);
 
     if (isLoginSuccess) {
-      try {
-        // 두 번째 화면 로드
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/org/example/baramdemo/macro-view.fxml"));
-        VBox macroView = fxmlLoader.load();
-
-        // 현재 Stage 에 새로운 Scene 을 설정
-        stage.setScene(new Scene(macroView));
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      loadScene();
     }
 
     if (!isLoginSuccess) {
       LoginAlertHelper.createErrorAlert().showAndWait();
     }
-
   }
 
   @FXML
   private void handleJoinBtn() {
-    try {
-      desktop.browse(new URI("https://www.naver.com"));
-    } catch (IOException | URISyntaxException e) {
-      e.printStackTrace();
-    }
+    goToWebPage(JOIN_WEB_PAGE_URL);
   }
 
   @FXML
   private void handleRestoreBtn() {
+    goToWebPage(RESTORE_WEB_PAGE_URL);
+  }
+
+  private void loadScene() {
     try {
-      desktop.browse(new URI("https://www.google.com"));
-    } catch (IOException | URISyntaxException e) {
+
+      FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(MACRO_FXML_PATH));
+      Scene macroScene = new Scene(fxmlLoader.load());
+      StageManager.getStage().setScene(macroScene);
+
+    } catch (IOException e) {
       e.printStackTrace();
     }
   }
 
-  // Stage 를 외부에서 전달받는 메소드
-  public void setStage(Stage stage) {
-    this.stage = stage;
+  private void goToWebPage(String webPageUrl) {
+    try {
+      desktop.browse(new URI(webPageUrl));
+    } catch (IOException | URISyntaxException e) {
+      e.printStackTrace();
+    }
   }
 }

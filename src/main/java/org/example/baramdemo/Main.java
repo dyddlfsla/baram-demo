@@ -6,33 +6,44 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import org.example.baramdemo.controller.IntroController;
+import org.example.baramdemo.util.StageManager;
 
 public class Main extends Application {
 
+  private Stage stage;
+  private static final String INTRO_FXML_PATH = "/org/example/baramdemo/intro-view.fxml";
+
   @Override
-  public void start(Stage primaryStage) throws IOException {
-
-    // FXML 파일을 로드하고 Scene 을 설정
-    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("intro-view.fxml"));
-    Scene scene = new Scene(fxmlLoader.load());
-
-    // HelloController 에 stage 전달
-    IntroController controller = fxmlLoader.getController();
-    controller.setStage(primaryStage); // 여기서 primaryStage 를 전달
-
-    // primaryStage 설정
-    Image windowIcon = new Image(getClass().getResourceAsStream("../../../static/img/baram_windows_icon.png"));
-    primaryStage.getIcons().add(windowIcon);
-    primaryStage.setTitle("The Kingdom of Winds Classic");
-    primaryStage.setResizable(false);
-    primaryStage.setScene(scene);
-
-    // 창을 띄웁니다.
-    primaryStage.show();
+  public void start(Stage primaryStage) {
+    initializePrimaryStage(primaryStage);
+    createStageManager();
+    loadScene();
   }
 
   public static void main(String[] args) {
     launch();
+  }
+
+  private void createStageManager() {
+    StageManager.getInstance().setStage(stage);
+  }
+
+  private void loadScene() {
+    FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(INTRO_FXML_PATH));
+    try {
+      Scene introScene = new Scene(fxmlLoader.load());
+      stage.setScene(introScene);
+      stage.show();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  private void initializePrimaryStage(Stage primaryStage) {
+    stage = primaryStage;
+    stage.setTitle("The Kingdom of Winds Classic");
+    Image iconImg = new Image(getClass().getResourceAsStream("../../../static/img/baram_windows_icon.png"));
+    stage.getIcons().add(iconImg);
+    stage.setResizable(false);
   }
 }
