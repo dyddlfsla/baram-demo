@@ -6,17 +6,38 @@ import com.github.kwhat.jnativehook.keyboard.NativeKeyListener;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.io.File;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.robot.Robot;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 public class MacroController {
 
+  FileChooser fileChooser;
+  @FXML
+  private ImageView imageOfKing;
+  @FXML
+  private ImageView imageOfMonster01;
+  @FXML
+  private ImageView imageOfMonster02;
+  @FXML
+  private ImageView imageOfMonster03;
+  @FXML
+  private ImageView imageOfMonster04;
+  @FXML
+  private ImageView imageOfMonster05;
+
   private NativeKeyListener keyListener; // 필드로 NativeKeyListener 추가
 
-  public MacroController() {
+  public void initialize() {
     initializeGlobalKeyListener();
+    initializeFileChooser();
   }
 
   // 글로벌 키보드 초기화
@@ -26,8 +47,17 @@ public class MacroController {
       keyListener = createKeyListener();
       GlobalScreen.addNativeKeyListener(keyListener);
     } catch (Exception e) {
-      handleError("키보드 리스너 초기화 실패", e);
+      handleError("failed to initialize keyListener", e);
     }
+  }
+
+  private void initializeFileChooser() {
+    // FileChooser 객체 생성
+    fileChooser = new FileChooser();
+    // 기본적으로 이미지 파일만 선택하도록 필터 설정
+    ExtensionFilter imageFilter =
+        new ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif");
+    fileChooser.getExtensionFilters().add(imageFilter);
   }
 
   // 키 입력을 처리하는 리스너 생성
@@ -71,8 +101,8 @@ public class MacroController {
     try {
       Robot robot = new Robot();
       Point currentPosition = MouseInfo.getPointerInfo().getLocation();
-      int newX = currentPosition.x + 10; // 10px 이동
-      int newY = currentPosition.y + 10;
+      int newX = currentPosition.x + 500; // 10px 이동
+      int newY = currentPosition.y + 500;
       robot.mouseMove(newX, newY);
     } catch (Exception e) {  // AWTException 처리 없이 모든 예외를 Exception 으로 처리
       handleError("마우스 이동 실패", e);
@@ -95,9 +125,7 @@ public class MacroController {
     });
   }
 
-  /**
-   * 에러 발생 시 알림을 띄움
-   */
+  // 에러 발생 시 알림 띄움
   private void handleError(String message, Exception e) {
     Platform.runLater(() -> {
       Alert alert = new Alert(AlertType.ERROR);
@@ -106,5 +134,51 @@ public class MacroController {
       alert.setContentText(e.getMessage());
       alert.showAndWait();
     });
+  }
+
+  @FXML
+  public void selectImageOfKing() {
+    selectImage(imageOfKing);
+  }
+
+  private void selectImage(ImageView imageView) {
+    File pickedFile = pickFile();
+
+    if (pickedFile != null) {
+      setImage(pickedFile, imageView);
+    }
+  }
+
+  private File pickFile() {
+    return fileChooser.showOpenDialog(imageOfKing.getScene().getWindow());
+  }
+
+  private void setImage(File pickedFile, ImageView imageView) {
+    imageView.setImage(new Image(pickedFile.toURI().toString()));
+  }
+
+  @FXML
+  public void selectImageOfMonster01() {
+    selectImage(imageOfMonster01);
+  }
+
+  @FXML
+  public void selectImageOfMonster02() {
+    selectImage(imageOfMonster02);
+  }
+
+  @FXML
+  public void selectImageOfMonster03() {
+    selectImage(imageOfMonster03);
+  }
+
+  @FXML
+  public void selectImageOfMonster04() {
+    selectImage(imageOfMonster04);
+  }
+
+  @FXML
+  public void selectImageOfMonster05() {
+    selectImage(imageOfMonster05);
   }
 }

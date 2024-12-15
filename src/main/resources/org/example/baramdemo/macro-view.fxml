@@ -35,7 +35,7 @@
           <Font name="Malgun Gothic" size="10.0"/>
         </font>
       </Text>
-      <ImageView fitHeight="100.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fx:id="imageOfKing" fitHeight="100.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
         <viewport>
           <Rectangle2D height="100.0" width="100.0"/>
         </viewport>
@@ -44,7 +44,7 @@
         </VBox.margin>
         <Image url="@../../../static/img/nothing1.png"/>
       </ImageView>
-      <Button mnemonicParsing="false" text="선택">
+      <Button onAction="#selectImageOfKing" mnemonicParsing="false" text="선택">
         <VBox.margin>
           <Insets/>
         </VBox.margin>
@@ -69,7 +69,7 @@
       </Text>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-          <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+          <ImageView fx:id="imageOfMonster01" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
             <viewport>
               <Rectangle2D height="70.0" width="70.0"/>
             </viewport>
@@ -78,14 +78,14 @@
             </VBox.margin>
             <Image url="@../../../static/img/nothing2.png"/>
           </ImageView>
-          <Button mnemonicParsing="false" text="선택">
+          <Button onAction="#selectImageOfMonster01" mnemonicParsing="false" text="선택">
             <font>
               <Font name="Malgun Gothic Bold" size="12.0"/>
             </font>
           </Button>
         </VBox>
         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-          <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+          <ImageView fx:id="imageOfMonster02" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
             <viewport>
               <Rectangle2D height="70.0" width="70.0"/>
             </viewport>
@@ -94,14 +94,14 @@
             </VBox.margin>
             <Image url="@../../../static/img/nothing2.png"/>
           </ImageView>
-          <Button mnemonicParsing="false" text="선택">
+          <Button onAction="#selectImageOfMonster02" mnemonicParsing="false" text="선택">
             <font>
               <Font name="Malgun Gothic Bold" size="12.0"/>
             </font>
           </Button>
         </VBox>
         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-          <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+          <ImageView fx:id="imageOfMonster03" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
             <viewport>
               <Rectangle2D height="70.0" width="70.0"/>
             </viewport>
@@ -110,14 +110,14 @@
             </VBox.margin>
             <Image url="@../../../static/img/nothing2.png"/>
           </ImageView>
-          <Button mnemonicParsing="false" text="선택">
+          <Button onAction="#selectImageOfMonster03" mnemonicParsing="false" text="선택">
             <font>
               <Font name="Malgun Gothic Bold" size="12.0"/>
             </font>
           </Button>
         </VBox>
         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-          <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+          <ImageView fx:id="imageOfMonster04" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
             <viewport>
               <Rectangle2D height="70.0" width="70.0"/>
             </viewport>
@@ -126,14 +126,14 @@
             </VBox.margin>
             <Image url="@../../../static/img/nothing2.png"/>
           </ImageView>
-          <Button mnemonicParsing="false" text="선택">
+          <Button onAction="#selectImageOfMonster04" mnemonicParsing="false" text="선택">
             <font>
               <Font name="Malgun Gothic Bold" size="12.0"/>
             </font>
           </Button>
         </VBox>
         <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
-          <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+          <ImageView fx:id="imageOfMonster05" fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
             <viewport>
               <Rectangle2D height="70.0" width="70.0"/>
             </viewport>
@@ -142,7 +142,7 @@
             </VBox.margin>
             <Image url="@../../../static/img/nothing2.png"/>
           </ImageView>
-          <Button mnemonicParsing="false" text="선택">
+          <Button onAction="#selectImageOfMonster05" mnemonicParsing="false" text="선택">
             <font>
               <Font name="Malgun Gothic Bold" size="12.0"/>
             </font>
