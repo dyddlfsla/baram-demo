@@ -9,6 +9,15 @@ plugins {
 group 'org.example'
 version '1.0-SNAPSHOT'
 
+application {
+    mainModule = 'org.example.baramdemo'
+    mainClass = 'org.example.baramdemo.Main'
+}
+
+java {
+    modularity.inferModulePath = true
+}
+
 repositories {
     mavenCentral()
     jcenter()
@@ -27,11 +36,6 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }
 
-application {
-    mainModule = 'org.example.baramdemo'
-    mainClass = 'org.example.baramdemo.HelloApplication'
-}
-
 javafx {
     version = '17.0.6'
     modules = ['javafx.controls', 'javafx.fxml']
@@ -39,6 +43,7 @@ javafx {
 
 dependencies {
     implementation files('lib/jnativehook-2.2.2.jar')
+    implementation files('lib/opencv-4100.jar')
     implementation 'org.openjfx:javafx-controls:23'
     implementation 'org.openjfx:javafx-web:23'
     implementation 'org.openjfx:javafx-fxml:23'
@@ -65,9 +70,34 @@ jlinkZip {
     group = 'distribution'
 }
 
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/resources'
+        }
+    }
+}
+
+tasks.withType(Copy).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
 run {
     jvmArgs = [
-            "--module-path", "C:\\Program Files\\javafx-sdk-23.0.1\\lib",  // JavaFX SDK 경로
-            "--add-modules", "javafx.controls,javafx.fxml"
+            "--module-path",
+            "C:\\Program Files\\javafx-sdk-23.0.1\\lib" +
+                    ";build/classes/java/main" +
+                    ";C:\\Users\\rammus\\.gradle\\caches\\modules-2\\files-2.1\\org.kordamp.bootstrapfx\\bootstrapfx-core\\0.4.0\\8d019b30266c00770cf29921d1008ad7feed0ed6\\bootstrapfx-core-0.4.0.jar" +
+                    ";C:\\Users\\rammus\\IdeaProjects\\baram-demo\\lib\\jnativehook-2.2.2.jar" +
+                    ";C:\\Users\\rammus\\IdeaProjects\\baram-demo\\lib\\opencv-4100.jar" +
+                    ";C:\\Users\\rammus\\.gradle\\caches\\modules-2\\files-2.1\\org.controlsfx\\controlsfx\\11.2.1\\e0f2568b8ee6e7a1639741f21b0024277ecbb7a7\\controlsfx-11.2.1.jar",
+
+            "--add-modules",
+            "javafx.controls,javafx.fxml",
+
+            "--module",
+            "org.example.baramdemo/org.example.baramdemo.Main",
+
+            "-Djava.library.path=C:\\Users\\rammus\\IdeaProjects\\baram-demo\\lib"
     ]
 }
