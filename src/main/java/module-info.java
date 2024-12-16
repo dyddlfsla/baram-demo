@@ -5,6 +5,7 @@ module org.example.baramdemo {
   requires org.kordamp.bootstrapfx.core;
   requires com.github.kwhat.jnativehook;
   requires opencv;
+  requires sikulixapi;
 
   opens org.example.baramdemo to javafx.fxml;
   opens org.example.baramdemo.controller to javafx.fxml;
