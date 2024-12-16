@@ -6,6 +6,7 @@ module org.example.baramdemo {
   requires com.github.kwhat.jnativehook;
   requires opencv;
   requires sikulixapi;
+  requires jlayer;
 
   opens org.example.baramdemo to javafx.fxml;
   opens org.example.baramdemo.controller to javafx.fxml;

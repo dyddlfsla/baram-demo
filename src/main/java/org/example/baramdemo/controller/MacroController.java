@@ -26,6 +26,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javazoom.jl.player.Player;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
@@ -216,13 +217,13 @@ private void startQuestMacro() {
             handleIncorrectQuest();
           }
           Thread.sleep(1000);
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
           handleInterruption();
-          break; // 매크로 중단
+          break;
         }
       }
     });
-    macroThread.start();  // 백그라운드에서 매크로 실행
+    macroThread.start();
   }
 
   private void handleInterruption() {
@@ -272,8 +273,7 @@ private void startQuestMacro() {
     // 평균 200ms, 표준편차 50ms의 정규 분포로 지연 시간을 계산
     int delay = (int) (rand.nextGaussian() * 50 + 200);
     // 지연 시간을 200ms ~ 400ms 범위로 제한
-    delay = Math.max(200, Math.min(400, delay));
-    // 계산된 지연 시간만큼 대기
+    delay = Math.max(200, Math.min(300, delay));
     Thread.sleep(delay);
   }
 
@@ -389,9 +389,9 @@ private void startQuestMacro() {
     }
   }
 
-  // 시스템 알림음
-  private void playReadySound() {
-    Toolkit.getDefaultToolkit().beep(); // 시스템 기본 알림음을 재생
+  private void playReadySound() throws Exception {
+    Player player = new Player(getClass().getClassLoader().getResourceAsStream("static/mp3/ready_to_play.mp3"));
+    player.play();
   }
 
   // UI 스레드에서 알림창 생성
