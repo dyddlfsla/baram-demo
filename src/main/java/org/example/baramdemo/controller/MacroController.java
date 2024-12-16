@@ -72,17 +72,6 @@ public class MacroController {
     }
   }
 
-  // 글로벌 키보드 초기화
-  private void initializeGlobalKeyListener() {
-    try {
-      GlobalScreen.registerNativeHook();
-      GlobalScreen.addNativeKeyListener(createKeyListener());
-      System.out.println("success to register key listener");
-    } catch (Exception e) {
-      handleError("failed to initialize keyListener", e);
-    }
-  }
-
   private void initializeFileChooser() {
     // FileChooser 객체 생성
     fileChooser = new FileChooser();
@@ -93,71 +82,82 @@ public class MacroController {
   }
 
   // 키 입력을 처리하는 리스너 생성
-  private NativeKeyListener createKeyListener() {
-    return new NativeKeyListener() {
+  private void initializeGlobalKeyListener() {
+
+    class KeyListenerHelper implements NativeKeyListener {
       @Override
-      public void nativeKeyPressed(NativeKeyEvent e) {
-        if (isF1KeyPressed(e)) {
-          handleF1KeyPress();
-        } else if (isF4KeyPressed(e)) {
-          handleF4KeyPress();
+      public void nativeKeyPressed(NativeKeyEvent keyEvent) {
+
+        switch (keyEvent.getKeyCode()) {
+          case NativeKeyEvent.VC_F1:
+            handleF1KeyPress();
+            break;
+          case NativeKeyEvent.VC_F2:
+            try {
+              handleF2KeyPress();
+            } catch (InterruptedException e) {
+              handleInterruption();
+            }
+            break;
+          case NativeKeyEvent.VC_F3:
+            try {
+              handleF3KeyPress();
+            } catch (InterruptedException e) {
+              handleInterruption();
+            }
+            break;
+          case NativeKeyEvent.VC_F4:
+            handleF4KeyPress();
+            break;
         }
       }
 
       @Override
-      public void nativeKeyReleased(NativeKeyEvent e) {
-        // 추가적인 키 해제 처리 로직이 필요하면 구현
-      }
+      public void nativeKeyReleased(NativeKeyEvent e) {} // 키 release 이벤트
 
       @Override
-      public void nativeKeyTyped(NativeKeyEvent e) {
-        // 추가적인 문자 키 입력 처리 로직이 필요하면 구현
-      }
-    };
-  }
+      public void nativeKeyTyped(NativeKeyEvent e) {} // 키 Type 이벤트
+    }
 
-  private boolean isF1KeyPressed(NativeKeyEvent e) {
-    return e.getKeyCode() == NativeKeyEvent.VC_F1;
-  }
-
-  private boolean isF4KeyPressed(NativeKeyEvent e) {
-    return e.getKeyCode() == NativeKeyEvent.VC_F4;
-  }
-
-  private void handleF4KeyPress() {
-    stopMacro();
+    try {
+      GlobalScreen.registerNativeHook();
+      GlobalScreen.addNativeKeyListener(new KeyListenerHelper());
+    } catch (Exception e) {
+      handleError("failed to initialize keyListener", e);
+    }
   }
 
   private void handleF1KeyPress() {
-    startMacro();
+    startQuestMacro();
+  }
+
+  private void handleF2KeyPress() throws InterruptedException {
+    teleportToTarget(kingGroundCharacter.getText());
+  }
+
+  private void handleF3KeyPress() throws InterruptedException {
+    teleportToTarget(huntingGroundCharacter.getText());
+  }
+
+  private void handleF4KeyPress() {
+    stopQuestMacro();
   }
 
   private void teleportToTarget(String characterName) throws InterruptedException {
-    // Step 1: U 키와 A 키 누르기
     pressUKey();
-    sleep(200); // 키 사이에 약간의 간격을 둡니다.
+    sleep(200);
     pressAKey();
     sleep(200);
-
-    // Step 2: 숫자 9 키 누르기
     pressNumber9Key();
     sleep(200);
-
-    // Step 3: huntingGroundCharacter 텍스트 필드에서 텍스트 가져오기
     typeCharacterName(characterName);
     sleep(200); // 텍스트 입력 후 잠깐 대기
-
-    // Step 5: 엔터 키 누르기
     pressEnterKey();
   }
 
   private boolean isKingExisted() {
     moveMouseToTarget(new Point(0, 0));
     return findImageOnScreen(imageOfKing) != null;
-  }
-
-  private void BackToTheKing() {
-
   }
 
   private void getQuestOfKing() throws InterruptedException {
@@ -189,7 +189,7 @@ public class MacroController {
     sleep(200);
   }
 
-  private void startMacro() {
+private void startQuestMacro() {
     isRunning = true;
 
     macroThread = new Thread(() -> {
@@ -202,7 +202,7 @@ public class MacroController {
 
       while (true) {
         try {
-          getQuestOfKing();  // 퀘스트 받기 시도
+          getQuestOfKing();
           System.out.println("Macro running..");
 
           if (isQuestRight()) {
@@ -238,9 +238,9 @@ public class MacroController {
       System.out.println("Macro stopped");
   }
 
-  private void stopMacro() {
+  private void stopQuestMacro() {
     if (!isRunning) {
-      return; // 매크로가 실행되지 않는다면 아무 작업도 안 함
+      return;
     }
 
     isRunning = false;
