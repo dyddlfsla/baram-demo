@@ -17,6 +17,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -35,6 +36,8 @@ public class MacroController {
 
   private FileChooser fileChooser;
   private Robot robot;
+  private boolean isRunning = false;
+  private Thread macroThread = null;
 
   @FXML
   private ImageView imageOfKing;
@@ -48,6 +51,10 @@ public class MacroController {
   private ImageView imageOfMonster04;
   @FXML
   private ImageView imageOfMonster05;
+  @FXML
+  private TextField huntingGroundCharacter;
+  @FXML
+  private TextField kingGroundCharacter;
 
   private NativeKeyListener keyListener; // 필드로 NativeKeyListener 추가
 
@@ -69,8 +76,8 @@ public class MacroController {
   private void initializeGlobalKeyListener() {
     try {
       GlobalScreen.registerNativeHook();
-      keyListener = createKeyListener();
-      GlobalScreen.addNativeKeyListener(keyListener);
+      GlobalScreen.addNativeKeyListener(createKeyListener());
+      System.out.println("success to register key listener");
     } catch (Exception e) {
       handleError("failed to initialize keyListener", e);
     }
@@ -92,6 +99,8 @@ public class MacroController {
       public void nativeKeyPressed(NativeKeyEvent e) {
         if (isF1KeyPressed(e)) {
           handleF1KeyPress();
+        } else if (isF4KeyPressed(e)) {
+          handleF4KeyPress();
         }
       }
 
@@ -107,25 +116,53 @@ public class MacroController {
     };
   }
 
-  // F1 키가 눌렸을 때 수행될 내용
-  private void handleF1KeyPress() {
-    Platform.runLater(() -> {
-      getQuestOfKing();
-
-    });
+  private boolean isF1KeyPressed(NativeKeyEvent e) {
+    return e.getKeyCode() == NativeKeyEvent.VC_F1;
   }
 
-  private void getQuestOfKing() {
+  private boolean isF4KeyPressed(NativeKeyEvent e) {
+    return e.getKeyCode() == NativeKeyEvent.VC_F4;
+  }
+
+  private void handleF4KeyPress() {
+    stopMacro();
+  }
+
+  private void handleF1KeyPress() {
+    startMacro();
+  }
+
+  private void teleportToTarget(String characterName) throws InterruptedException {
+    // Step 1: U 키와 A 키 누르기
+    pressUKey();
+    sleep(200); // 키 사이에 약간의 간격을 둡니다.
+    pressAKey();
+    sleep(200);
+
+    // Step 2: 숫자 9 키 누르기
+    pressNumber9Key();
+    sleep(200);
+
+    // Step 3: huntingGroundCharacter 텍스트 필드에서 텍스트 가져오기
+    typeCharacterName(characterName);
+    sleep(200); // 텍스트 입력 후 잠깐 대기
+
+    // Step 5: 엔터 키 누르기
+    pressEnterKey();
+  }
+
+  private boolean isKingExisted() {
     moveMouseToTarget(new Point(0, 0));
-    Point targetPoint = findImageOnScreen(imageOfKing);
+    return findImageOnScreen(imageOfKing) != null;
+  }
 
-    if (targetPoint == null) {
-      showInfoAlert("Can't find image on the screen");
-      return;
-    }
+  private void BackToTheKing() {
 
-    moveMouseToTarget(targetPoint);
+  }
 
+  private void getQuestOfKing() throws InterruptedException {
+    moveMouseToTarget(new Point(0, 0));
+    moveMouseToTarget(findImageOnScreen(imageOfKing));
     mouseClick();
     sleep(200);
     pressEnterKey();
@@ -152,17 +189,85 @@ public class MacroController {
     sleep(200);
   }
 
-  private boolean isQuestRight() {
+  private void startMacro() {
+    isRunning = true;
 
-    return false;
+    macroThread = new Thread(() -> {
+      System.out.println("Macro started");
+
+      if (!isKingExisted()) {
+        handleKingNotExisted();
+        return;
+      }
+
+      while (true) {
+        try {
+          getQuestOfKing();  // 퀘스트 받기 시도
+          System.out.println("Macro running..");
+
+          if (isQuestRight()) {
+            teleportToTarget(huntingGroundCharacter.getText());
+            System.out.println("Macro stopped");
+            break; // 올바른 퀘스트가 있으면 텔레포트하고 종료
+
+          } else {
+            handleIncorrectQuest();
+          }
+          Thread.sleep(2000);
+
+        } catch (InterruptedException e) {
+          handleInterruption();
+          break; // 매크로 중단
+        }
+      }
+    });
+    macroThread.start();  // 백그라운드에서 매크로 실행
   }
 
-  public static void sleep(int milliseconds) {
-    try {
-      Thread.sleep(milliseconds);  // 지정된 시간(ms)만큼 대기
-    } catch (InterruptedException e) {
-      e.printStackTrace();
+  private void handleInterruption() {
+    Thread.currentThread().interrupt();
+    System.out.println("Macro interrupted during quest processing.");
+  }
+
+  private void handleIncorrectQuest() {
+    System.out.println("Quest is not correct, trying again.");
+  }
+
+  private void handleKingNotExisted() {
+      showInfoAlert("The King is NOT PRESENT.");
+      System.out.println("Macro stopped");
+  }
+
+  private void stopMacro() {
+    if (!isRunning) {
+      return; // 매크로가 실행되지 않는다면 아무 작업도 안 함
     }
+
+    isRunning = false;
+    if (macroThread != null && macroThread.isAlive()) {
+      macroThread.interrupt();  // 매크로 스레드를 중지
+      System.out.println("macro stopped");
+      showInfoAlert("매크로가 중지되었습니다.");
+    }
+  }
+
+  private boolean isQuestRight() {
+
+    Point targetPoint1 = findImageOnScreen(imageOfMonster01);
+    Point targetPoint2 = findImageOnScreen(imageOfMonster02);
+    Point targetPoint3 = findImageOnScreen(imageOfMonster03);
+    Point targetPoint4 = findImageOnScreen(imageOfMonster04);
+    Point targetPoint5 = findImageOnScreen(imageOfMonster05);
+
+    return targetPoint1 != null
+        || targetPoint2 != null
+        || targetPoint3 != null
+        || targetPoint4 != null
+        || targetPoint5 != null;
+  }
+
+  public static void sleep (int milliseconds) throws InterruptedException {
+      Thread.sleep(milliseconds);  // 지정된 시간(ms)만큼 대기
   }
 
   // 마우스를 클릭하는 메소드
@@ -195,9 +300,34 @@ public class MacroController {
     robot.keyRelease(KeyEvent.VK_PAGE_DOWN); // Page Down 키 떼기
   }
 
-  // F1 키가 눌렸을 때 수행될 내용
-  private boolean isF1KeyPressed(NativeKeyEvent e) {
-    return e.getKeyCode() == NativeKeyEvent.VC_F1;
+  private void pressUKey() {
+    robot.keyPress(KeyEvent.VK_U);  // U 키 누르기
+    robot.keyRelease(KeyEvent.VK_U); // U 키 떼기
+  }
+
+  private void pressAKey() {
+    robot.keyPress(KeyEvent.VK_A);  // A 키 누르기
+    robot.keyRelease(KeyEvent.VK_A); // A 키 떼기
+  }
+
+  private void pressNumber9Key() {
+    robot.keyPress(KeyEvent.VK_9);  // 숫자 9 키 누르기
+    robot.keyRelease(KeyEvent.VK_9); // 숫자 9 키 떼기
+  }
+
+  private void typeCharacterName(String name) {
+    for (char c : name.toCharArray()) {
+      int keyCode = KeyEvent.getExtendedKeyCodeForChar(c);
+      if (keyCode != KeyEvent.VK_UNDEFINED) {
+        robot.keyPress(keyCode);  // 해당 문자의 키 누르기
+        robot.keyRelease(keyCode); // 해당 문자의 키 떼기
+        try {
+          sleep(50);  // 키 간에 잠깐 대기 (너무 빠르게 타이핑하지 않도록)
+        } catch (InterruptedException e) {
+          throw new RuntimeException(e);
+        }
+      }
+    }
   }
 
   // 마우스 이동
@@ -232,6 +362,8 @@ public class MacroController {
       }
     } catch (AWTException e) {
       handleError("마우스 이동 실패", e);
+    } catch (InterruptedException e) {
+      handleInterruption();
     }
   }
 
@@ -328,11 +460,9 @@ public class MacroController {
 
         // Create a 32-bit ARGB color (alpha << 24 | red << 16 | green << 8 | blue)
         int awtColor = (alpha << 24) | (red << 16) | (green << 8) | blue;
-
         bufferedImage.setRGB(x, y, awtColor);
       }
     }
-
     return bufferedImage;
   }
 
@@ -366,7 +496,7 @@ public class MacroController {
     return mat;
   }
 
-  // 3. 이미지를 찾을 전체 화면을 스크린 샷
+  // 3. 이미지를 검색할 대상 화면을 스크린샷으로 촬영
   public BufferedImage captureScreen() {
     Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
     return robot.createScreenCapture(screenRect);
@@ -377,43 +507,31 @@ public class MacroController {
     return bufferedImageToMat(captureScreen());
   }
 
-  // 5. 두 이미지를 매칭
+  // 5. 두 이미지를 비교하여 매칭되는 부분을 찾고 해당 위치의 좌표를 반환
   public Point getLocBetweenImages(Mat screenShot, Mat imageView) {
     // 결과 행렬 (템플릿 매칭 결과를 저장)
     Mat matchResult = new Mat();
-
-    // 템플릿 매칭 수행 (이 방법은 TM_CCOEFF_NORMED를 사용하여 상관 계수를 계산)
+    // 템플릿 매칭 수행 (TM_CCOEFF_NORMED 를 사용하여 상관 계수를 계산)
     Imgproc.matchTemplate(screenShot, imageView, matchResult, Imgproc.TM_CCOEFF_NORMED);
-
     // 결과 행렬에서 최댓값과 최댓값의 위치를 찾아 템플릿의 일치 부분 찾기
     Core.MinMaxLocResult mmr = Core.minMaxLoc(matchResult);
-
     double threshold = 0.8; // 임계값을 원하는 값으로 설정 (0.0 ~ 1.0)
 
     if ((mmr.maxVal >= threshold)) {
-      // x, y 값을 사용하여 java.awt.Point 생성
+      // x, y 값을 사용하여 java.awt.Point 생성하고 최댓값의 위치를 반환
       return new Point((int) mmr.maxLoc.x, (int) mmr.maxLoc.y);
     }
-
-    // 최댓값의 위치를 반환
     return null;
   }
 
   private Mat imageViewToMat(ImageView imageView) {
-    Image image = imageView.getImage();  // 예시로 imageOfKing 사용
+    Image image = imageView.getImage();
     return bufferedImageToMat(convertImageToBufferedImage(image));
-
   }
 
-  private Point findImageOnScreen(ImageView template) {
-    // Step 1: ImageView 에서 이미지를 얻고 Mat 으로 변환
-    Mat imageViewMat = imageViewToMat(template);
-
-    // Step 3: 화면의 스크린샷을 Mat 형식으로 캡처
-    Mat screenShot = captureScreenAsMat();
-
-    // Step 4: 이미지를 비교하여 일치하는 부분의 좌표를 찾기
-    return getLocBetweenImages(screenShot, imageViewMat);
+  private Point findImageOnScreen(ImageView imageView) {
+    // 이미지를 비교하고 일치하는 부분의 좌표를 찾기
+    return getLocBetweenImages(captureScreenAsMat(), imageViewToMat(imageView));
   }
 
 }
