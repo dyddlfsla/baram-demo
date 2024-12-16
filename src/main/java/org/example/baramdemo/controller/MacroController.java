@@ -9,10 +9,13 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.Robot;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.util.Random;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -55,8 +58,6 @@ public class MacroController {
   private TextField huntingGroundCharacter;
   @FXML
   private TextField kingGroundCharacter;
-
-  private NativeKeyListener keyListener; // 필드로 NativeKeyListener 추가
 
   public void initialize() {
     initializeGlobalKeyListener();
@@ -145,13 +146,13 @@ public class MacroController {
 
   private void teleportToTarget(String characterName) throws InterruptedException {
     pressUKey();
-    sleep(200);
+    pauseThread();
     pressAKey();
-    sleep(200);
+    pauseThread();
     pressNumber9Key();
-    sleep(200);
+    pauseThread();
     typeCharacterName(characterName);
-    sleep(200); // 텍스트 입력 후 잠깐 대기
+    pauseThread(); // 텍스트 입력 후 잠깐 대기
     pressEnterKey();
   }
 
@@ -164,29 +165,29 @@ public class MacroController {
     moveMouseToTarget(new Point(0, 0));
     moveMouseToTarget(findImageOnScreen(imageOfKing));
     mouseClick();
-    sleep(200);
+    pauseThread();
     pressEnterKey();
-    sleep(200);
+    pauseThread();
     pressEnterKey();
-    sleep(200);
+    pauseThread();
     pressEnterKey();
-    sleep(200);
+    pauseThread();
     pressEnterKey();
-    sleep(200);
+    pauseThread();
     pressArrowDownKey();
-    sleep(250);
+    pauseThread();
     pressEnterKey();
-    sleep(250);
+    pauseThread();
     pressEnterKey();
-    sleep(250);
+    pauseThread();
     pressEnterKey();
-    sleep(200);
+    pauseThread();
     pressSKey();
-    sleep(200);
+    pauseThread();
     pressPageDownKey();
-    sleep(200);
+    pauseThread();
     pressPageDownKey();
-    sleep(200);
+    pauseThread();
   }
 
 private void startQuestMacro() {
@@ -207,14 +208,14 @@ private void startQuestMacro() {
 
           if (isQuestRight()) {
             teleportToTarget(huntingGroundCharacter.getText());
+            playReadySound();
             System.out.println("Macro stopped");
             break; // 올바른 퀘스트가 있으면 텔레포트하고 종료
 
           } else {
             handleIncorrectQuest();
           }
-          Thread.sleep(2000);
-
+          Thread.sleep(1000);
         } catch (InterruptedException e) {
           handleInterruption();
           break; // 매크로 중단
@@ -266,35 +267,40 @@ private void startQuestMacro() {
         || targetPoint5 != null;
   }
 
-  public static void sleep (int milliseconds) throws InterruptedException {
-      Thread.sleep(milliseconds);  // 지정된 시간(ms)만큼 대기
+  public void pauseThread() throws InterruptedException {
+    Random rand = new Random();
+    // 평균 200ms, 표준편차 50ms의 정규 분포로 지연 시간을 계산
+    int delay = (int) (rand.nextGaussian() * 50 + 200);
+    // 지연 시간을 200ms ~ 400ms 범위로 제한
+    delay = Math.max(200, Math.min(400, delay));
+    // 계산된 지연 시간만큼 대기
+    Thread.sleep(delay);
   }
 
-  // 마우스를 클릭하는 메소드
+  public void pauseThread(int delay) throws InterruptedException {
+    Thread.sleep(delay);
+  }
+
   public void mouseClick() {
     robot.mousePress(InputEvent.BUTTON1_DOWN_MASK); // 왼쪽 버튼 클릭
     robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
   }
 
-  // 엔터 키를 누르는 메소드
   public void pressEnterKey() {
     robot.keyPress(KeyEvent.VK_ENTER);  // 엔터 키 누르기
     robot.keyRelease(KeyEvent.VK_ENTER); // 엔터 키 떼기
   }
 
-  // 아래 방향키를 누르는 메소드
   public void pressArrowDownKey() {
     robot.keyPress(KeyEvent.VK_DOWN);  // 아래 방향키 누르기
     robot.keyRelease(KeyEvent.VK_DOWN); // 아래 방향키 떼기
   }
 
-  // 'S' 키를 누르는 메소드
   public void pressSKey() {
     robot.keyPress(KeyEvent.VK_S);  // 'S' 키 누르기
     robot.keyRelease(KeyEvent.VK_S); // 'S' 키 떼기
   }
 
-  // Page Down 키를 누르는 메소드
   public void pressPageDownKey() {
     robot.keyPress(KeyEvent.VK_PAGE_DOWN);  // Page Down 키 누르기
     robot.keyRelease(KeyEvent.VK_PAGE_DOWN); // Page Down 키 떼기
@@ -311,23 +317,39 @@ private void startQuestMacro() {
   }
 
   private void pressNumber9Key() {
-    robot.keyPress(KeyEvent.VK_9);  // 숫자 9 키 누르기
-    robot.keyRelease(KeyEvent.VK_9); // 숫자 9 키 떼기
+    robot.keyPress(KeyEvent.VK_9);
+    robot.keyRelease(KeyEvent.VK_9);
   }
 
   private void typeCharacterName(String name) {
-    for (char c : name.toCharArray()) {
-      int keyCode = KeyEvent.getExtendedKeyCodeForChar(c);
-      if (keyCode != KeyEvent.VK_UNDEFINED) {
-        robot.keyPress(keyCode);  // 해당 문자의 키 누르기
-        robot.keyRelease(keyCode); // 해당 문자의 키 떼기
-        try {
-          sleep(50);  // 키 간에 잠깐 대기 (너무 빠르게 타이핑하지 않도록)
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
-      }
-    }
+//    for (char c : name.toCharArray()) {
+//      int keyCode = KeyEvent.getExtendedKeyCodeForChar(c);
+//      if (keyCode != KeyEvent.VK_UNDEFINED) {
+//        robot.keyPress(keyCode);  // 해당 문자의 키 누르기
+//        robot.keyRelease(keyCode); // 해당 문자의 키 떼기
+//        try {
+//          pauseThread(50);  // 키 간에 잠깐 대기 (너무 빠르게 타이핑하지 않도록)
+//        } catch (InterruptedException e) {
+//          throw new RuntimeException(e);
+//        }
+//      }
+//    }
+//    Screen screen = new Screen();
+//    screen.type(name);
+    nameToClipboard(name);
+    pasteNameInClip();
+  }
+
+  private void pasteNameInClip() {
+    robot.keyPress(KeyEvent.VK_CONTROL);
+    robot.keyPress(KeyEvent.VK_V);
+    robot.keyRelease(KeyEvent.VK_V);
+    robot.keyRelease(KeyEvent.VK_CONTROL);
+  }
+
+  private void nameToClipboard(String name) {
+    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+    clipboard.setContents(new StringSelection(name), null);
   }
 
   // 마우스 이동
@@ -343,8 +365,8 @@ private void startQuestMacro() {
       int endX = targetPoint.x;
       int endY = targetPoint.y;
 
-      int steps = 30; // 이동 구간 수 (숫자가 클수록 더 부드럽고 천천히 이동)
-      int delay = 10; // 각 구간을 이동한 후 기다리는 시간 (밀리초)
+      int steps = 20; // 이동 구간 수 (숫자가 클수록 더 부드럽고 천천히 이동)
+      int delay = 7; // 각 구간을 이동한 후 기다리는 시간 (밀리초)
 
       // 구간을 나누어 이동
       for (int i = 0; i <= steps; i++) {
@@ -358,7 +380,7 @@ private void startQuestMacro() {
         // 마우스 이동
         robot.mouseMove(x, y);
         // 각 구간을 이동 후 딜레이를 줘서 천천히 움직이게 함
-        sleep(delay);
+        pauseThread(delay);
       }
     } catch (AWTException e) {
       handleError("마우스 이동 실패", e);
@@ -368,7 +390,7 @@ private void startQuestMacro() {
   }
 
   // 시스템 알림음
-  private void playSystemBeep() {
+  private void playReadySound() {
     Toolkit.getDefaultToolkit().beep(); // 시스템 기본 알림음을 재생
   }
 
@@ -515,7 +537,7 @@ private void startQuestMacro() {
     Imgproc.matchTemplate(screenShot, imageView, matchResult, Imgproc.TM_CCOEFF_NORMED);
     // 결과 행렬에서 최댓값과 최댓값의 위치를 찾아 템플릿의 일치 부분 찾기
     Core.MinMaxLocResult mmr = Core.minMaxLoc(matchResult);
-    double threshold = 0.8; // 임계값을 원하는 값으로 설정 (0.0 ~ 1.0)
+    double threshold = 0.9; // 임계값을 원하는 값으로 설정 (0.0 ~ 1.0)
 
     if ((mmr.maxVal >= threshold)) {
       // x, y 값을 사용하여 java.awt.Point 생성하고 최댓값의 위치를 반환
