@@ -111,6 +111,13 @@ public class MacroController {
           case NativeKeyEvent.VC_F4:
             handleF4KeyPress();
             break;
+          case NativeKeyEvent.VC_F5:
+            try {
+              handleF5KeyPress();
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+            break;
         }
       }
 
@@ -145,6 +152,9 @@ public class MacroController {
     stopQuestMacro();
   }
 
+  private void handleF5KeyPress() throws InterruptedException {
+  }
+
   private void teleportToTarget(String characterName) throws InterruptedException {
     pressUKey();
     pauseThread();
@@ -159,12 +169,12 @@ public class MacroController {
 
   private boolean isKingExisted() {
     moveMouseToTarget(new Point(0, 0));
-    return findImageOnScreen(imageOfKing) != null;
+    return findImageOnScreen(imageOfKing, "imageOfKing") != null;
   }
 
   private void getQuestOfKing() throws InterruptedException {
     moveMouseToTarget(new Point(0, 0));
-    moveMouseToTarget(findImageOnScreen(imageOfKing));
+    moveMouseToTarget(findImageOnScreen(imageOfKing, "imageOfKing"));
     mouseClick();
     pauseThread();
     pressEnterKey();
@@ -188,7 +198,7 @@ public class MacroController {
     pressPageDownKey();
     pauseThread();
     pressPageDownKey();
-    pauseThread();
+    pauseThread(150);
   }
 
 private void startQuestMacro() {
@@ -208,6 +218,7 @@ private void startQuestMacro() {
           System.out.println("Macro running..");
 
           if (isQuestRight()) {
+            System.out.println("Quest is right..");
             teleportToTarget(huntingGroundCharacter.getText());
             playReadySound();
             System.out.println("Macro stopped");
@@ -216,7 +227,7 @@ private void startQuestMacro() {
           } else {
             handleIncorrectQuest();
           }
-          Thread.sleep(1000);
+          Thread.sleep(200);
         } catch (Exception e) {
           handleInterruption();
           break;
@@ -255,11 +266,11 @@ private void startQuestMacro() {
 
   private boolean isQuestRight() {
 
-    Point targetPoint1 = findImageOnScreen(imageOfMonster01);
-    Point targetPoint2 = findImageOnScreen(imageOfMonster02);
-    Point targetPoint3 = findImageOnScreen(imageOfMonster03);
-    Point targetPoint4 = findImageOnScreen(imageOfMonster04);
-    Point targetPoint5 = findImageOnScreen(imageOfMonster05);
+    Point targetPoint1 = findImageOnScreen(imageOfMonster01, "imageOfMonster01");
+    Point targetPoint2 = findImageOnScreen(imageOfMonster02, "imageOfMonster02");
+    Point targetPoint3 = findImageOnScreen(imageOfMonster03, "imageOfMonster03");
+    Point targetPoint4 = findImageOnScreen(imageOfMonster04, "imageOfMonster04");
+    Point targetPoint5 = findImageOnScreen(imageOfMonster05, "imageOfMonster05");
 
     return targetPoint1 != null
         || targetPoint2 != null
@@ -273,7 +284,7 @@ private void startQuestMacro() {
     // 평균 200ms, 표준편차 50ms의 정규 분포로 지연 시간을 계산
     int delay = (int) (rand.nextGaussian() * 50 + 200);
     // 지연 시간을 200ms ~ 400ms 범위로 제한
-    delay = Math.max(200, Math.min(300, delay));
+    delay = Math.max(200, Math.min(250, delay));
     Thread.sleep(delay);
   }
 
@@ -366,7 +377,7 @@ private void startQuestMacro() {
       int endY = targetPoint.y;
 
       int steps = 20; // 이동 구간 수 (숫자가 클수록 더 부드럽고 천천히 이동)
-      int delay = 7; // 각 구간을 이동한 후 기다리는 시간 (밀리초)
+      int delay = 8; // 각 구간을 이동한 후 기다리는 시간 (밀리초)
 
       // 구간을 나누어 이동
       for (int i = 0; i <= steps; i++) {
@@ -530,15 +541,16 @@ private void startQuestMacro() {
   }
 
   // 5. 두 이미지를 비교하여 매칭되는 부분을 찾고 해당 위치의 좌표를 반환
-  public Point getLocBetweenImages(Mat screenShot, Mat imageView) {
+  public Point getLocBetweenImages(Mat screenShot, Mat imageView, String imageName) {
     // 결과 행렬 (템플릿 매칭 결과를 저장)
     Mat matchResult = new Mat();
     // 템플릿 매칭 수행 (TM_CCOEFF_NORMED 를 사용하여 상관 계수를 계산)
     Imgproc.matchTemplate(screenShot, imageView, matchResult, Imgproc.TM_CCOEFF_NORMED);
     // 결과 행렬에서 최댓값과 최댓값의 위치를 찾아 템플릿의 일치 부분 찾기
     Core.MinMaxLocResult mmr = Core.minMaxLoc(matchResult);
-    double threshold = 0.9; // 임계값을 원하는 값으로 설정 (0.0 ~ 1.0)
+    double threshold = 0.85; // 임계값을 원하는 값으로 설정 (0.0 ~ 1.0)
 
+    System.out.println(imageName + ":" + mmr.maxVal);
     if ((mmr.maxVal >= threshold)) {
       // x, y 값을 사용하여 java.awt.Point 생성하고 최댓값의 위치를 반환
       return new Point((int) mmr.maxLoc.x, (int) mmr.maxLoc.y);
@@ -551,9 +563,9 @@ private void startQuestMacro() {
     return bufferedImageToMat(convertImageToBufferedImage(image));
   }
 
-  private Point findImageOnScreen(ImageView imageView) {
+  private Point findImageOnScreen(ImageView imageView, String imageName) {
     // 이미지를 비교하고 일치하는 부분의 좌표를 찾기
-    return getLocBetweenImages(captureScreenAsMat(), imageViewToMat(imageView));
+    return getLocBetweenImages(captureScreenAsMat(), imageViewToMat(imageView), imageName);
   }
 
 }
