@@ -332,7 +332,7 @@ private void startQuestMacro() {
     robot.keyRelease(KeyEvent.VK_9);
   }
 
-  private void typeCharacterName(String name) {
+  private void typeCharacterName(String name) throws InterruptedException {
 //    for (char c : name.toCharArray()) {
 //      int keyCode = KeyEvent.getExtendedKeyCodeForChar(c);
 //      if (keyCode != KeyEvent.VK_UNDEFINED) {
@@ -348,6 +348,7 @@ private void startQuestMacro() {
 //    Screen screen = new Screen();
 //    screen.type(name);
     nameToClipboard(name);
+    pauseThread();
     pasteNameInClip();
   }
 
@@ -552,8 +553,17 @@ private void startQuestMacro() {
 
     System.out.println(imageName + ":" + mmr.maxVal);
     if ((mmr.maxVal >= threshold)) {
+
+      // 중앙 좌표 계산 (x, y)
+      int centerX = (int) mmr.maxLoc.x + imageView.cols() / 2;
+      int centerY = (int) mmr.maxLoc.y + imageView.rows() / 2;
+
+      Random random = new Random();
+      int offsetX = random.nextInt(21) - 10;
+      int offsetY = random.nextInt(7) - 3;
+
       // x, y 값을 사용하여 java.awt.Point 생성하고 최댓값의 위치를 반환
-      return new Point((int) mmr.maxLoc.x, (int) mmr.maxLoc.y);
+      return new Point(centerX + offsetX, centerY + offsetY);
     }
     return null;
   }
