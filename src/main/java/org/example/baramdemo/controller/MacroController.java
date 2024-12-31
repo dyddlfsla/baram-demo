@@ -21,6 +21,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelReader;
@@ -37,6 +38,7 @@ public class MacroController {
   static {
     System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // OpenCV 라이브러리 로드
   }
+
 
   private FileChooser fileChooser;
   private Robot robot;
@@ -59,6 +61,10 @@ public class MacroController {
   private TextField huntingGroundCharacter;
   @FXML
   private TextField kingGroundCharacter;
+  @FXML
+  private ToggleButton kingGroundCharacterSaveBtn;
+  @FXML
+  private ToggleButton huntingGroundCharacterSaveBtn;
 
   public void initialize() {
     initializeGlobalKeyListener();
@@ -576,6 +582,32 @@ private void startQuestMacro() {
   private Point findImageOnScreen(ImageView imageView, String imageName) {
     // 이미지를 비교하고 일치하는 부분의 좌표를 찾기
     return getLocBetweenImages(captureScreenAsMat(), imageViewToMat(imageView), imageName);
+  }
+
+  @FXML
+  private void handleSaveKingGroundCharacter() {
+    if (kingGroundCharacterSaveBtn.isSelected()) {
+      // 입력 필드를 비활성화하고 텍스트를 "변경"으로 설정
+      kingGroundCharacter.setDisable(true);
+      kingGroundCharacterSaveBtn.setText("변경");
+    } else {
+      // 입력 필드를 활성화하고 텍스트를 "저장"으로 설정
+      kingGroundCharacter.setDisable(false);
+      kingGroundCharacterSaveBtn.setText("저장");
+    }
+  }
+
+  @FXML
+  private void handleSaveHuntingGroundCharacter() {
+    if (huntingGroundCharacterSaveBtn.isSelected()) {
+      // 입력 필드를 비활성화하고 텍스트를 "변경"으로 설정
+      huntingGroundCharacter.setDisable(true);
+      huntingGroundCharacterSaveBtn.setText("변경");
+    } else {
+      // 입력 필드를 활성화하고 텍스트를 "저장"으로 설정
+      huntingGroundCharacter.setDisable(false);
+      huntingGroundCharacterSaveBtn.setText("저장");
+    }
   }
 
 }
